@@ -88,7 +88,6 @@ def GetDescription(df, table_name, column_names, file_name):
     stm += type2Audit
     stm = stm[:-1] + f' FROM TBL_{table_name}'
 
-    # Append SQL statement to the output file
     with open(file_name, 'a') as file:
         file.write(stm + '\n\n')
     
@@ -100,7 +99,6 @@ def find_tbl_name(statement):
         return tbl_name[4:]
     return tbl_name
 
-# Paths
 file_path = r'C:\Users\pr38\Documents\DG\STTM\PROD_Servicing_Data_Warehouse_STTM_MASTER 9.xlsx'
 lsams_path = r'C:\Users\pr38\Downloads\LSAMS Data Dictionary ALL Files 03-05-2019_latest 1.xlsx'
 sheet_name = 'SRVC_WH'  
@@ -115,7 +113,7 @@ with open(r"C:\\Users\\pr38\\Desktop\\dumpp.txt", 'r') as file:
 ddl_statements = content.split(';')
 file_path = r'C:\Users\pr38\Downloads\outputs.txt'
 
-# DataFrame to hold all results
+
 all_results_df = pd.DataFrame()
 
 for statement in ddl_statements:
@@ -144,7 +142,7 @@ for statement in ddl_statements:
     if column_names:
         result_df = GetDescription(df,tbl_name, column_names, file_name=file_path)
         all_results_df = pd.concat([all_results_df, result_df], ignore_index=True)
-# Save all results to a single Excel sheet
+
 with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
     all_results_df.to_excel(writer, sheet_name='All_Tables', index=False)
 

@@ -31,10 +31,9 @@ has = {
 
 }
 
-# Initialize a dictionary to store table creation scripts
+
 table_scripts = {}
 
-# Group the data by the table name
 grouped = df.groupby('LSAMS TABLE ')
 
 for table_name, group in grouped:
@@ -44,21 +43,18 @@ for table_name, group in grouped:
     columns = []
     primary_keys = []
 
-    # Iterate through each row to detect primary keys
     for index, row in group.iterrows():
         column_name = row['SF VIEW COLUMN NAME']
         datatype = row['DATA TYPE ']
 
-        # Detect if the column is a primary key by checking red fill in Excel
         cell = ws.cell(row=index+2, column=group.columns.get_loc('SF VIEW COLUMN NAME') + 1)
-        if cell.fill.start_color.index == 'FFFF0000':  # Red fill
+        if cell.fill.start_color.index == 'FFFF0000':  
             primary_keys.append(column_name)
         
         columns.append(f"    {column_name} {datatype}")
 
     create_stmt += ",\n".join(columns)
     
-    # Add primary key constraint if there are any primary keys detected
     if primary_keys:
         create_stmt += f",\n CONSTRAINT PK_{tbl_nm}  PRIMARY KEY ({', '.join(primary_keys)})"
     

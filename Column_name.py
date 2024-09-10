@@ -1,21 +1,16 @@
 import os
 import re
 
-# Path to the folder containing SQL files
 folder_path = r'C:\Users\pr38\Downloads\fun\fun'
 
-# Path to save the output text file
 output_file = r'C:\Users\pr38\Downloads\outp.txt'
 
-# Create a list to store table and column names
 table_column_list = []
 
-# Iterate through each file in the folder
 for filename in os.listdir(folder_path):
     if filename.endswith(".sql"):
         file_path = os.path.join(folder_path, filename)
-        
-        # Read the content of the SQL file
+     
         with open(file_path, 'r') as file:
             content = file.read()
         
@@ -35,7 +30,6 @@ for filename in os.listdir(folder_path):
                 table_column_list.append(f'table:{table_name} column:{column_name}')
 
 
-# Save the list to a text file
 with open(output_file, 'w') as txt_file:
     for entry in table_column_list:
         txt_file.write(entry + '\n')
