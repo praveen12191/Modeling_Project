@@ -2,14 +2,14 @@ import pandas as pd
 from openpyxl import load_workbook
 
 # File path to your Excel file
-file_path = r'C:\Users\pr38\Downloads\SNOWFLAKE_STTM_LSAMS.xlsx'
+file_path = r'C:\Users\pr38\Downloads\SNOWFLAKE_STTM_LSAMS (1).xlsx'
 
 # Load workbook using openpyxl
 wb = load_workbook(file_path, data_only=True)
-ws = wb.active
+ws = wb['Specific table']  # Specify the correct sheet name
 
 # Load the Excel sheet into a DataFrame
-df = pd.read_excel(file_path)
+df = pd.read_excel(file_path, sheet_name='Specific table')
 
 # Mapping for table names
 has = {
@@ -26,11 +26,8 @@ has = {
     'SRVCHGV': 'LOAN_ARM',
     'SRVESCE': 'LOAN_ESCROW',
     'SRVCOLI': 'LOAN_COLLECTION_ITEM',
-    'LSFBDTL00' : 'FOREBEARANCE_PAYMENT_DETAIL'
-
-
+    'LSFBDTL00': 'FOREBEARANCE_PAYMENT_DETAIL'
 }
-
 
 table_scripts = {}
 
@@ -38,17 +35,22 @@ grouped = df.groupby('LSAMS TABLE ')
 
 for table_name, group in grouped:
     tbl_nm = has.get(table_name, table_name)
-    
-    create_stmt = f"CREATE TABLE {tbl_nm} (\n"
+    create_stmt = f"CREATE TABLE {table_name} (\n"
     columns = []
     primary_keys = []
 
     for index, row in group.iterrows():
-        column_name = row['SF VIEW COLUMN NAME']
+        column_name = row['LSAMS COLUMN ']
         datatype = row['DATA TYPE ']
 
-        cell = ws.cell(row=index+2, column=group.columns.get_loc('SF VIEW COLUMN NAME') + 1)
-        if cell.fill.start_color.index == 'FFFF0000':  
+
+        cell = ws.cell(row=index + 2, column=group.columns.get_loc('LSAMS COLUMN ') + 1)
+
+
+      
+        fill_color = cell.fill.start_color.rgb
+        if fill_color == 'FFFF0000':  
+            print(f"Primary key detected: {column_name}")
             primary_keys.append(column_name)
         
         columns.append(f"    {column_name} {datatype}")
@@ -56,7 +58,7 @@ for table_name, group in grouped:
     create_stmt += ",\n".join(columns)
     
     if primary_keys:
-        create_stmt += f",\n CONSTRAINT PK_{tbl_nm}  PRIMARY KEY ({', '.join(primary_keys)})"
+        create_stmt += f",\n CONSTRAINT PK_{table_name} PRIMARY KEY ({', '.join(primary_keys)})"
     
     create_stmt += "\n);"
     table_scripts[tbl_nm] = create_stmt
@@ -65,4 +67,3 @@ output_file = r'C:\Users\pr38\Downloads\lsams_tbl_list.txt'
 for table_name, script in table_scripts.items():
     with open(output_file, 'a') as file:
         file.write(script + '\n')
-
