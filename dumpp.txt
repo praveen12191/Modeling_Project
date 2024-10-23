@@ -1,0 +1,35 @@
+CREATE TABLE tbl_Inventory(
+	InventoryID bigint NOT NULL,
+	InventoryBatchID bigint NOT NULL,
+	ReportDate date NOT NULL,
+	LoanID varchar(40) NOT NULL,
+	WarehouseLineID bigint NOT NULL,
+	UnpaidPrincipleBalance decimal(18, 2) NOT NULL,
+	AdvanceAmount decimal(18, 2) NOT NULL,
+	FundDate date NOT NULL,
+	Age int NOT NULL,
+	Interest decimal(18, 2) NOT NULL,
+	CollateralType VARCHAR(100) NOT NULL,
+	Category VARCHAR(100) NULL,
+	LoanType VARCHAR(100) NOT NULL,
+	UpdateDateTime datetime NOT NULL,
+	UpdatedBy varchar(200) NOT NULL,
+ CONSTRAINT tbl_Inventory_PK PRIMARY KEY 
+(
+	InventoryID
+));
+
+
+CREATE TABLE tbl_WarehouseLine(
+	WarehouseLineID bigint  NOT NULL,
+	WarehouseLineName VARCHAR(100) NULL,
+	Originator varchar(40) NULL,
+	Capacity decimal(18, 1) NULL,
+	CommittedCapacity decimal(18, 1) NULL,
+	UncommittedCapacity decimal(18, 1) NULL,
+	Sublimit decimal(18, 1) NULL,
+	NonUsageThreshold decimal(18, 1) NULL,
+ CONSTRAINT tbl_WarehouseLineID_PK PRIMARY KEY 
+(
+	WarehouseLineID
+));
